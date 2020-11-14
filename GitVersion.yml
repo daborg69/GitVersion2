@@ -1,5 +1,5 @@
 assembly-versioning-scheme: MajorMinorPatch
-mode: MainLine
+mode: ContinuousDelivery
 tag-prefix: '[vV][eE][rR]'
 
 
