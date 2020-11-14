@@ -8,6 +8,7 @@ namespace GitVersion2
 			Console.WriteLine("hello");
 			int x = 0;
 			x++;
+			x++;
 		}
 	}
 }
