@@ -2,6 +2,7 @@
 
 namespace GitVersion2
 {
+	// Next Version
 	public class Class1
 	{
 		Class1 () {
