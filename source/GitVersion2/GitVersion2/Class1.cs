@@ -24,6 +24,9 @@ namespace GitVersion2
 			z += 2;
 			z += 2;
 			z += 2;
+
+			int a = 90;
+			a += 10;
 		}
 	}
 }
