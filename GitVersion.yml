@@ -1,5 +1,5 @@
 assembly-versioning-scheme: MajorMinorPatch
-mode: MainLine
+mode: ContinuousDelivery
 tag-prefix: '[vV][eE][rR]'
 
 
@@ -8,18 +8,23 @@ tag-prefix: '[vV][eE][rR]'
 
 branches: 
   develop:
+    tag: alpha
     increment: Minor
     regex: ^dev(elop)?(ment)?$
   feature:
+    tag: useBranchName
     increment: Minor
     regex: ^features?[/-]
   release:
+    tag: beta
     increment: Minor
     regex: ^releases?[/-]
   hotfix:
+    tag: beta
     regex: ^hotfix(es)?[/-]|^fix[/-]
     increment: Patch
   master: 
+    tag: ''
     regex: ^master$|^main$
     increment: Patch  
 
