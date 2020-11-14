@@ -1,3 +1,4 @@
+assembly-versioning-scheme: MajorMinorPatch
 mode: ContinuousDelivery
 tag-prefix: '[vV][eE][rR]'
 branches: {}
