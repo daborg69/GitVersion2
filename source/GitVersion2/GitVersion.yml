@@ -1,0 +1,6 @@
+mode: ContinuousDelivery
+tag-prefix: '[vV][eE][rR]'
+branches: {}
+ignore:
+  sha: []
+merge-message-formats: {}

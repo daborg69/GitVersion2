@@ -6,6 +6,8 @@ namespace GitVersion2
 	{
 		Class1 () {
 			Console.WriteLine("hello");
+			int x = 0;
+			x++;
 		}
 	}
 }
