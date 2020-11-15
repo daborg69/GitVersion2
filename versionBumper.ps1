@@ -90,12 +90,14 @@ Function Add-GitVersionInfo {
 	########################
 	###### Script Start
 	########################
-
-		
+	Write-Host ""
+	Write-Host ""
+	Write-Host ""
 	# Update the Versions folder with latest.
 	$versions = ProcessVersionsFile;
 	Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)"
-
+	Write-Host
+	Write-Host
 
 	# At this point the only change in the Commit tree should be the versions.txt file.  We will commit it 
 	# with a custom tag name and then commit a Version Tag
