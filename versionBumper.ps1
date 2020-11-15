@@ -15,6 +15,7 @@ Write-Host "Current Branch:  $curBranch"
 # Determine if there are any changes that need to be committed.  If there are the user needs to fix before we can continue
 git update-index -q --refresh
 $cleanGit = (git diff-index --quiet HEAD --)
+Write-Host $cleanGit
 if ($cleanGit -ne $true) {
   Write-Host "Error:  There are uncommitted changes in the the current branch: $curBranch.  These must be committed or discarded before this script can continue" -foregroundcolor "Red"
   Return 100
