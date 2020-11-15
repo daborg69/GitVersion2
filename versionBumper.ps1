@@ -4,7 +4,7 @@ $fullFile = "$curDir\$fileName"
 $countThreshold = 15
 $skipThreshold = 10
 $shouldCommit = $true
-
+$specialCommitMarker = "|^|"
 
 
 # Get Current Branch Name
@@ -17,9 +17,11 @@ git update-index -q --refresh
 $cleanGit = (git diff-index --quiet HEAD --)
 if ($cleanGit -ne $true) {
   Write-Host "Error:  There are uncommitted changes in the the current branch: $curBranch.  These must be committed or discarded before this script can continue" -foregroundcolor "Red"
-  Return 1
+  Return 100
 }
 
+
+# Clean up the Version folder if necessary
 Get-Content $fullFile | Measure-Object -Line -outvariable output | Out-Null
 $lines = $output.Lines
 if ($lines -gt $countThreshold) {
@@ -39,16 +41,17 @@ $latestVersion >> versions.txt
 
 
 
-
-
-
+# At this point the only change in the Commit tree should be the versions.txt file.  We will commit it 
+# with a custom tag name and then commit a Version Tag
+# We will commit everything, create the tag and then push everything upstream.
 if ($shouldCommit -eq $true) {
   $tagName = "Ver$latestSemVer"
   $tagDesc = "Deployed Version:  $curBranch  |  $latestSemVer"
   git add .
-  git commit -m "|^| Deployed Version $latestSemVer"
+  git commit -m "$specialCommitMarker Deployed Version $latestSemVer"
   
   git tag -a $tagName -m $tagDesc
   git push --set-upstream origin $curBranch 
   git push --tags origin
 }
+
