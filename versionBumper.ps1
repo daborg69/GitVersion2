@@ -29,6 +29,12 @@ Write-Host "Current Branch:  $curBranch"
 
 
 if ($shouldCommit -eq $true) {
+  $tagName = "Ver$latestSemVer"
+  $tagDesc = "Deployed Version:  $curBranch  |  $latestSemVer"
   git add .
   git commit -m "Deployed Version $latestSemVer"
+  
+  git tag -a $tagName -m $tagDesc
+  git push --set-upstream origin $curBranch 
+  git push --tags origin
 }
