@@ -5,6 +5,21 @@ $countThreshold = 15
 $skipThreshold = 10
 $shouldCommit = $true
 
+
+
+# Get Current Branch Name
+$curBranch = (git branch --show-current)
+Write-Host "Current Branch:  $curBranch"
+
+
+# Determine if there are any changes that need to be committed.  If there are the user needs to fix before we can continue
+git update-index -q --refresh
+$cleanGit = (git diff-index --quiet HEAD --)
+if ($cleanGit -ne $true) {
+  Write-Host "Error:  There are uncommitted changes in the the current branch: $curBranch.  These must be committed or discarded before this script can continue" -foregroundcolor "Red"
+  Return 1
+}
+
 Get-Content $fullFile | Measure-Object -Line -outvariable output | Out-Null
 $lines = $output.Lines
 if ($lines -gt $countThreshold) {
@@ -23,16 +38,15 @@ Write-Host "Latest SemVer:   $latestSemVer"
 $latestVersion >> versions.txt
 
 
-# Get Current Branch Name
-$curBranch = (git branch --show-current)
-Write-Host "Current Branch:  $curBranch"
+
+
 
 
 if ($shouldCommit -eq $true) {
   $tagName = "Ver$latestSemVer"
   $tagDesc = "Deployed Version:  $curBranch  |  $latestSemVer"
   git add .
-  git commit -m "Deployed Version $latestSemVer"
+  git commit -m "|^| Deployed Version $latestSemVer"
   
   git tag -a $tagName -m $tagDesc
   git push --set-upstream origin $curBranch 
