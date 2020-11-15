@@ -100,7 +100,7 @@ Function Add-GitVersionInfo {
 
 	# Update the Versions folder with latest.
 	$versions = ProcessVersionsFile;
-	Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)"
+	Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)" -foregroundcolor "Cyan"
 	Write-Host
 	Write-Host
 
@@ -108,7 +108,7 @@ Function Add-GitVersionInfo {
 	# with a custom tag name and then commit a Version Tag
 	# We will commit everything, create the tag and then push everything upstream.
 	if ($shouldCommit -eq $true) {
-		Write-Host "Committing a Version Commit"
+		Write-Host "Committing a Version Commit" -Foregroundcolor "Blue"
 		$tagName = "Ver$($versions.LatestSemVer)"
 		$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestSemVer)"
 		git add .
