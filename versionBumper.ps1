@@ -101,8 +101,8 @@ Function Add-GitVersionInfo {
 	# with a custom tag name and then commit a Version Tag
 	# We will commit everything, create the tag and then push everything upstream.
 	if ($shouldCommit -eq $true) {
-		$tagName = "Ver$latestSemVer"
-		$tagDesc = "Deployed Version:  $curBranch  |  $latestSemVer"
+		$tagName = "Ver$($versions.LatestSemVer)"
+		$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestSemVer)"
 		git add .
 		git commit -m "$specialCommitMarker $tagDesc"
   
