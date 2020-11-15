@@ -50,7 +50,7 @@ Function Add-GitVersionInfo {
 
 		# Read latest version from file
 		$previousVersion = Get-Content $fullFile -Tail 1 
-		Write-Host "Previous Version Committed:  $previousVersion"
+		Write-Host "Previous Version Committed:  $previousVersion" -foregroundcolor "Cyan"
 
 
 		# Append latest version number to the File
@@ -72,8 +72,20 @@ Function Add-GitVersionInfo {
 	}
 
 	 
+
+
+
+	########################
+	###### Script Start
+	########################
+	Write-Host ""
+	Write-Host ""
+	Write-Host ""
+
+
 	# Get Current Branch
 	$curBranch = GetCurrentBranch
+	Write-Host ""
 
 
 	# Determine if there are any changes that need to be committed.  If there are the user needs to fix before we can continue
@@ -86,13 +98,6 @@ Function Add-GitVersionInfo {
 	}
 
 
-
-	########################
-	###### Script Start
-	########################
-	Write-Host ""
-	Write-Host ""
-	Write-Host ""
 	# Update the Versions folder with latest.
 	$versions = ProcessVersionsFile;
 	Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)"
@@ -103,6 +108,7 @@ Function Add-GitVersionInfo {
 	# with a custom tag name and then commit a Version Tag
 	# We will commit everything, create the tag and then push everything upstream.
 	if ($shouldCommit -eq $true) {
+		Write-Host "Committing a Version Commit"
 		$tagName = "Ver$($versions.LatestSemVer)"
 		$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestSemVer)"
 		git add .
