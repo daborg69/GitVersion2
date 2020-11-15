@@ -12,7 +12,7 @@ Function Add-GitVersionInfo {
 	)
 
 
-
+	# Global Variables
 	$curDir = Get-Location
 	$fileName = "versions.txt"
 	$fullFile = "$curDir\$fileName"
@@ -20,59 +20,100 @@ Function Add-GitVersionInfo {
 	$skipThreshold = 10
 	$shouldCommit = $true
 	$specialCommitMarker = "|^|"
+	$curBranch = ""
 
 
-	# Get Arguments
-	$param1=$args[0]
+	######################
+	#  Gets the current Git branch
+	######################
+	Function GetCurrentBranch {
+		# Get Current Branch Name
+		$branch = (git branch --show-current)
+		Write-Host "Current Branch:  $branch" -foregroundcolor "Green"
+		$branch
+	}
 
 
-	# Get Current Branch Name
-	$curBranch = (git branch --show-current)
-	Write-Host "Current Branch:  $curBranch"
+	######################
+	#  Process the Versions File.  Purging old entries if needed and adding new Version info if it does not match latest entry.
+	#  Returns a Variable with LatestVersion and LatestSemVer properties.
+	######################
+	Function ProcessVersionsFile {
+		Get-Content $fullFile | Measure-Object -Line -outvariable output | Out-Null
+		$lines = $output.Lines
+		if ($lines -gt $countThreshold) {
+		  Write-Host "Purging beginning of file due to file size" -foregroundcolor "cyan"
+		  $newFile = Get-Content $fullFile | Select-Object -Skip $skipThreshold 
+		  $newFile | Out-File $fullFile
+		}
+
+
+		# Read latest version from file
+		$previousVersion = Get-Content $fullFile -Tail 1 
+		Write-Host "Previous Version Committed:  $previousVersion"
+
+
+		# Append latest version number to the File
+		$latestVersion = GitVersion /showvariable MajorMinorPatch
+		$latestSemVer = GitVersion /showvariable SemVer
+
+		$rc = [PSCustomObject]@{
+			LatestVersion = $latestVersion
+			LatestSemVer = $latestSemVer
+		}
+
+		# Write NewVersion to file if not the same as prio
+		$newVersion = "$latestVersion|$latestSemVer"
+		if ($newVersion -ne $previousVersion) {
+			$newVersion >> versions.txt
+		}
+
+		return $rc
+	}
+
+	 
+	# Get Current Branch
+	$curBranch = GetCurrentBranch
 
 
 	# Determine if there are any changes that need to be committed.  If there are the user needs to fix before we can continue
 	git update-index -q --refresh
 	git diff-index --quiet HEAD --
 	if (!$?) {
-	  Write-Host "Error:  There are uncommitted changes in the the current branch: $curBranch.  These must be committed or discarded before this script can continue" -foregroundcolor "Red"
-	  Return 100
+		Write-Host ""
+		Write-Host "Error:  There are uncommitted changes in the the current branch: $curBranch.  These must be committed or discarded before this script can continue" -foregroundcolor "Red"
+		Return 100
 	}
 
-
-	# Clean up the Version folder if necessary
-	Get-Content $fullFile | Measure-Object -Line -outvariable output | Out-Null
-	$lines = $output.Lines
-	if ($lines -gt $countThreshold) {
-	  Write-Host "Purging beginning of file due to file size" -foregroundcolor "cyan"
-	  $newFile = Get-Content $fullFile | Select-Object -Skip $skipThreshold 
-	  $newFile | Out-File $fullFile
-	}
-
-
-	# Append latest version number to the File
-	$latestVersion = GitVersion /showvariable MajorMinorPatch
-	$latestSemVer = GitVersion /showvariable SemVer
-
-	Write-Host "Latest Version:  $latestVersion"
-	Write-Host "Latest SemVer:   $latestSemVer"
-	$latestVersion >> versions.txt
-
+	
+		
+		
+	# Update the Versions folder with latest.
+	$versions = ProcessVersionsFile;
+	Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)"
 
 
 	# At this point the only change in the Commit tree should be the versions.txt file.  We will commit it 
 	# with a custom tag name and then commit a Version Tag
 	# We will commit everything, create the tag and then push everything upstream.
 	if ($shouldCommit -eq $true) {
-	  $tagName = "Ver$latestSemVer"
-	  $tagDesc = "Deployed Version:  $curBranch  |  $latestSemVer"
-	  git add .
-	  git commit -m "$specialCommitMarker Deployed Version $latestSemVer"
+		$tagName = "Ver$latestSemVer"
+		$tagDesc = "Deployed Version:  $curBranch  |  $latestSemVer"
+		git add .
+		git commit -m "$specialCommitMarker $tagDesc"
   
-	  git tag -a $tagName -m $tagDesc
-	  git push --set-upstream origin $curBranch 
-	  git push --tags origin
+		git tag -a $tagName -m $tagDesc
+		git push --set-upstream origin $curBranch 
+		git push --tags origin
 	}
 
+	
+		# Closing
 
+		Write-Host "Latest Version:  $latestVersion"
+		Write-Host "Latest SemVer:   $latestSemVer"
+		Write-Host "Git Tagged:      $tagDesc"
+	
 }
+
+Add-GitVersionInfo
