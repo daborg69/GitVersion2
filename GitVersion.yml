@@ -26,7 +26,10 @@ branches:
   master: 
     tag: ''
     regex: ^master$|^main$
+    prevent-increment-of-merged-branch-version: true
     increment: Patch  
+    mode: ContinuousDelivery
+
 
 
 ignore:
