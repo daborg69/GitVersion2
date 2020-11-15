@@ -1,10 +1,11 @@
 $curDir = Get-Location
 $fileName = "versions.txt"
 $fullFile = "$curDir\$fileName"
-$countThreshold = 5
-$skipThreshold = 3
+$countThreshold = 15
+$skipThreshold = 10
+$shouldCommit = $true
 
-Get-Content $fullFile | Measure-Object -Line -outvariable output
+Get-Content $fullFile | Measure-Object -Line -outvariable output | Out-Null
 $lines = $output.Lines
 if ($lines -gt $countThreshold) {
   Write-Host "Purging beginning of file due to file size" -foregroundcolor "cyan"
@@ -15,7 +16,19 @@ if ($lines -gt $countThreshold) {
 
 # Append latest version number to the File
 $latestVersion = GitVersion /showvariable MajorMinorPatch
+$latestSemVer = GitVersion /showvariable SemVer
 
 Write-Host "Latest Version:  $latestVersion"
+Write-Host "Latest SemVer:   $latestSemVer"
 $latestVersion >> versions.txt
 
+
+# Get Current Branch Name
+$curBranch = (git branch --show-current)
+Write-Host "Current Branch:  $curBranch"
+
+
+if ($shouldCommit -eq $true) {
+  git add .
+  git commit -m "Deployed Version $latestSemVer"
+}
