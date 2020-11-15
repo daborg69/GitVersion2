@@ -85,8 +85,12 @@ Function Add-GitVersionInfo {
 		Return 100
 	}
 
-	
-		
+
+
+	########################
+	###### Script Start
+	########################
+
 		
 	# Update the Versions folder with latest.
 	$versions = ProcessVersionsFile;
@@ -105,6 +109,12 @@ Function Add-GitVersionInfo {
 		git tag -a $tagName -m $tagDesc
 		git push --set-upstream origin $curBranch 
 		git push --tags origin
+	}
+
+	if (!$?) { 
+		Write-Host ""
+		Write-Host "ERROR:  Problems adding Version Commit and Tag."
+		Return 101
 	}
 
 	
