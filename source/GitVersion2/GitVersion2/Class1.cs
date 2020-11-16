@@ -12,6 +12,8 @@ namespace GitVersion2
 			x++;
 			x++;
 			x++;
+			x++;
+			x++;
 
 			int y = 0;
 			y++;
