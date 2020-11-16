@@ -14,11 +14,11 @@ branches:
   feature:
     tag: useBranchName
     increment: Minor
-    regex: ^features?[/-]
+    regex: ^feature?[/-]
   release:
     tag: beta
     increment: Minor
-    regex: ^releases?[/-]
+    regex: ^release?[/-]
   hotfix:
     tag: beta
     regex: ^hotfix(es)?[/-]|^fix[/-]
