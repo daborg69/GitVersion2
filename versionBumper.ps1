@@ -179,4 +179,4 @@ Function Add-GitVersionInfo {
 	
 }
 
-Add-GitVersionInfo
+Add-GitVersionInfo $args[0]
