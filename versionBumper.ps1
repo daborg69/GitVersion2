@@ -8,7 +8,8 @@ Function Add-GitVersionInfo {
 		 - The branch and the tags are all pushed to the origin server.
 	#>
 	param (
-		[switch]$Master
+		[switch]$Master,
+		[switch]$MasterPart2
 	)
 
 
@@ -105,6 +106,10 @@ Function Add-GitVersionInfo {
 	Write-Host
 
 
+	# Build the file
+	nuke Compile
+
+
 	# If doing a mid stream update, then commit version and exit
 	if (! $Master) {
 		# At this point the only change in the Commit tree should be the versions.txt file.  We will commit it 
@@ -131,11 +136,12 @@ Function Add-GitVersionInfo {
 
 	# Is a Master push, so we needs to: Checkout master, Merge the current branch into master, Push and then delete the feature branch
 	else {
-		$commitMsg = "Merging branch: $curBranch"
-		git checkout master
-		git merge $curBranch --no-ff  --no-edit -m 
-
-
+		if (!$MasterPart2) {
+			$commitMsg = "Merging branch: $curBranch"
+			git checkout master
+		}
+		else {
+			git merge $curBranch --no-ff  --no-edit -m $commitMsg
 			$tagName = "Ver$($versions.LatestVersion)"
 			$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestVersion)"
 			git add .
@@ -148,6 +154,7 @@ Function Add-GitVersionInfo {
 			# Finally, cleanup the feature branch 
 			git branch -D $curBranch
 			git push origin --delete $curBranch
+		}
 	}
 	
 		# Closing
