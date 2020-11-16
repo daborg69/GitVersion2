@@ -84,12 +84,12 @@ Function Add-GitVersionInfo {
 	Write-Host ""
 
 
-	# Get Current Branch
+	# A.  Get Current Branch
 	$curBranch = GetCurrentBranch
 	Write-Host ""
 
 
-	# Determine if there are any changes that need to be committed.  If there are the user needs to fix before we can continue
+	# B.  Determine if there are any changes that need to be committed.  If there are the user needs to fix before we can continue
 	git update-index -q --refresh
 	git diff-index --quiet HEAD --
 	if (!$?) {
@@ -99,18 +99,23 @@ Function Add-GitVersionInfo {
 	}
 
 
-	# Update the Versions folder with latest.
+	# C.  Update the Versions folder with latest.
 	$versions = ProcessVersionsFile;
 	Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)" -foregroundcolor "Cyan"
 	Write-Host
 	Write-Host
 
 
-	# Build the file
+	# D.  Start the NUKE build process
 	nuke Compile
+	if (!$?) {
+		Write-Host ""
+		Write-Host "Errors during the Nuke Building process occurrred.  Cannot continue.  Check for errors in Nuke process in above messages and correct."
+		return 400;
+	}
 
 
-	# If doing a mid stream update, then commit version and exit
+	# E.  If doing a mid stream update (Non Master), then commit version and exit
 	if (! $Master) {
 		# At this point the only change in the Commit tree should be the versions.txt file.  We will commit it 
 		# with a custom tag name and then commit a Version Tag
@@ -130,18 +135,27 @@ Function Add-GitVersionInfo {
 		if (!$?) { 
 			Write-Host ""
 			Write-Host "ERROR:  Problems adding Version Commit and Tag."
-			Return 101
+			Return 500
 		}
 	}
 
-	# Is a Master push, so we needs to: Checkout master, Merge the current branch into master, Push and then delete the feature branch
+
+	# F.  Is a Master push, so we needs to: Checkout master, Merge the current branch into master, Push and then delete the feature branch
 	else {
-		if (!$MasterPart2) {
+		# F.1.  Swap to master branch so we can build production version
 			$commitMsg = "Merging branch: $curBranch"
 			git checkout master
-		}
-		else {
 			git merge $curBranch --no-ff  --no-edit -m $commitMsg
+
+		# F.2.  Nuke Build the apps
+			nuke Compile
+			if (!$?) {
+				Write-Host ""
+				Write-Host "ERROR:  Nuke Master Build process failed.  Check Nuke Process messages for details."
+				Return 600
+			}
+
+		# F.3.  Everything looks good.  commit
 			$tagName = "Ver$($versions.LatestVersion)"
 			$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestVersion)"
 			git add .
@@ -154,8 +168,8 @@ Function Add-GitVersionInfo {
 			# Finally, cleanup the feature branch 
 			git branch -D $curBranch
 			git push origin --delete $curBranch
-		}
 	}
+	
 	
 		# Closing
 
