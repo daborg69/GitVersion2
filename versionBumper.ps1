@@ -7,9 +7,9 @@ Function Add-GitVersionInfo {
 		 - A Git Tag commit occurs, which stamps the current version into a tag with a custom tag descriptor
 		 - The branch and the tags are all pushed to the origin server.
 	#>
+	[cmdletbinding()] 
 	param (
-		[switch]$Master,
-		[switch]$MasterPart2
+		[switch[]]$Master
 	)
 
 
@@ -183,4 +183,8 @@ Function Add-GitVersionInfo {
 	
 }
 
-Add-GitVersionInfo $args[0]
+Write-Host "Args:  $args"
+if ($args[0] -eq "-Master") {
+	Add-GitVersionInfo -Master:$true }
+else {
+	Add-GitVersionInfo -Master:$false }
