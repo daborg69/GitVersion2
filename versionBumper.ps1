@@ -81,7 +81,7 @@ Function Add-GitVersionInfo {
 	########################
 	Write-Host ""
 	Write-Host ""
-	Write-Host ""
+	Write-Host "Master Switch:  $Master"
 
 
 	# A.  Get Current Branch
