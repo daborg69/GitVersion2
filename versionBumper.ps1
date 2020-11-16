@@ -39,7 +39,7 @@ Function Add-GitVersionInfo {
 	#  Process the Versions File.  Purging old entries if needed and adding new Version info if it does not match latest entry.
 	#  Returns a Variable with LatestVersion and LatestSemVer properties.
 	######################
-	Function ProcessVersionsFile {
+	Function ProcessVersionsFile ([switch]$update) {
 		Get-Content $fullFile | Measure-Object -Line -outvariable output | Out-Null
 		$lines = $output.Lines
 		if ($lines -gt $countThreshold) {
@@ -54,9 +54,10 @@ Function Add-GitVersionInfo {
 		Write-Host "Previous Version Committed:  $previousVersion" -foregroundcolor "Cyan"
 
 
-		# Append latest version number to the File
+		# Get the Latest Version info from GitVersion
 		$latestVersion = GitVersion /showvariable MajorMinorPatch
 		$latestSemVer = GitVersion /showvariable SemVer
+
 
 		$rc = [PSCustomObject]@{
 			LatestVersion = $latestVersion
@@ -65,10 +66,11 @@ Function Add-GitVersionInfo {
 
 		# Write NewVersion to file if not the same as prio
 		$newVersion = "$latestVersion|$latestSemVer"
-		if ($newVersion -ne $previousVersion) {
-			$newVersion >> versions.txt
+		if ($update) {
+			if ($newVersion -ne $previousVersion) {
+				$newVersion >> versions.txt
+			}
 		}
-
 		return $rc
 	}
 
@@ -115,7 +117,7 @@ Function Add-GitVersionInfo {
 
 		
 		# C.  Update the Versions folder with latest.
-		$versions = ProcessVersionsFile;
+		$versions = ProcessVersionsFile -update:$true;
 		Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)" -foregroundcolor "Cyan"
 		Write-Host
 		Write-Host
@@ -158,6 +160,8 @@ Function Add-GitVersionInfo {
 				Write-Host "ERROR:  Nuke Master Build process failed.  Check Nuke Process messages for details."
 				Return 600
 			}
+
+		$versions = ProcessVersionsFile -update:$true;
 
 		# F.3.  Everything looks good.  commit
 			$tagName = "Ver$($versions.LatestVersion)"
