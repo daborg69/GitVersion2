@@ -99,24 +99,28 @@ Function Add-GitVersionInfo {
 	}
 
 
-	# C.  Update the Versions folder with latest.
-	$versions = ProcessVersionsFile;
-	Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)" -foregroundcolor "Cyan"
-	Write-Host
-	Write-Host
 
-
-	# D.  Start the NUKE build process
-	nuke Compile
-	if (!$?) {
-		Write-Host ""
-		Write-Host "Errors during the Nuke Building process occurrred.  Cannot continue.  Check for errors in Nuke process in above messages and correct."
-		return 400;
-	}
 
 
 	# E.  If doing a mid stream update (Non Master), then commit version and exit
 	if (! $Master) {
+	
+		# E.1  Start the NUKE build process
+		nuke Compile
+		if (!$?) {
+			Write-Host ""
+			Write-Host "Errors during the Nuke Building process for Non-Master branch occurrred.  Cannot continue.  Check for errors in Nuke process in above messages and correct."
+			return 400;
+		}
+
+		
+		# C.  Update the Versions folder with latest.
+		$versions = ProcessVersionsFile;
+		Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)" -foregroundcolor "Cyan"
+		Write-Host
+		Write-Host
+
+
 		# At this point the only change in the Commit tree should be the versions.txt file.  We will commit it 
 		# with a custom tag name and then commit a Version Tag
 		# We will commit everything, create the tag and then push everything upstream.
