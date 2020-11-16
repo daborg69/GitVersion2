@@ -104,27 +104,51 @@ Function Add-GitVersionInfo {
 	Write-Host
 	Write-Host
 
-	# At this point the only change in the Commit tree should be the versions.txt file.  We will commit it 
-	# with a custom tag name and then commit a Version Tag
-	# We will commit everything, create the tag and then push everything upstream.
-	if ($shouldCommit -eq $true) {
-		Write-Host "Committing a Version Commit" -Foregroundcolor "Blue"
-		$tagName = "Ver$($versions.LatestSemVer)"
-		$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestSemVer)"
-		git add .
-		git commit -m "$specialCommitMarker $tagDesc"
+
+	# If doing a mid stream update, then commit version and exit
+	if (! $Master) {
+		# At this point the only change in the Commit tree should be the versions.txt file.  We will commit it 
+		# with a custom tag name and then commit a Version Tag
+		# We will commit everything, create the tag and then push everything upstream.
+		if ($shouldCommit -eq $true) {
+			Write-Host "Committing a Version Commit" -Foregroundcolor "Magenta"
+			$tagName = "Ver$($versions.LatestSemVer)"
+			$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestSemVer)"
+			git add .
+			git commit -m "$specialCommitMarker $tagDesc"
   
-		git tag -a $tagName -m $tagDesc
-		git push --set-upstream origin $curBranch 
-		git push --tags origin
+			git tag -a $tagName -m $tagDesc
+			git push --set-upstream origin $curBranch 
+			git push --tags origin
+		}
+
+		if (!$?) { 
+			Write-Host ""
+			Write-Host "ERROR:  Problems adding Version Commit and Tag."
+			Return 101
+		}
 	}
 
-	if (!$?) { 
-		Write-Host ""
-		Write-Host "ERROR:  Problems adding Version Commit and Tag."
-		Return 101
-	}
+	# Is a Master push, so we needs to: Checkout master, Merge the current branch into master, Push and then delete the feature branch
+	else {
+		$commitMsg = "Merging branch: $curBranch"
+		git checkout master
+		git merge $curBranch --no-ff  --no-edit -m 
 
+
+			$tagName = "Ver$($versions.LatestVersion)"
+			$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestVersion)"
+			git add .
+			git commit -m "$specialCommitMarker $tagDesc"
+  
+			git tag -a $tagName -m $tagDesc
+			git push origin
+			git push --tags origin
+
+			# Finally, cleanup the feature branch 
+			git branch -D $curBranch
+			git push origin --delete $curBranch
+	}
 	
 		# Closing
 
