@@ -27,8 +27,11 @@ class Build : NukeBuild
 
     public static int Main () => Execute<Build>(x => x.Compile);
 
-    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")] 
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    
+    [Parameter] string ApiKey;
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
@@ -72,11 +75,10 @@ class Build : NukeBuild
 
     Target Pack => _ => _
 		.DependsOn(Compile)
+		
 	    .Executes(() =>
 	    {
-		    
 		    DotNetPack(_ => _
-		                    //.SetNoRestore(true)
 		                    .SetProject(Solution.GetProject("Core"))
 		                    .SetOutputDirectory(OutputDirectory)
 		                    .SetAssemblyVersion(GitVersion.AssemblySemVer)
@@ -84,12 +86,21 @@ class Build : NukeBuild
 		                    .SetInformationalVersion(GitVersion.InformationalVersion)
                             .SetVersion(GitVersion.NuGetVersionV2));
             DotNetPack(_ => _
-		                    //.SetNoRestore(true)
+		                    
                             .SetProject(Solution.GetProject("Printer"))
 		                    .SetOutputDirectory(OutputDirectory)
-		                    .SetFileVersion(GitVersion.AssemblySemFileVer)
+                            .SetAssemblyVersion(GitVersion.AssemblySemVer)
+                            .SetFileVersion(GitVersion.AssemblySemFileVer)
+                            .SetInformationalVersion(GitVersion.InformationalVersion)
                             .SetVersion(GitVersion.NuGetVersionV2));
+	    });
 
-        });
-
+    Target Publish => _ => _
+	    .DependsOn(Pack)
+	    .Requires(() => ApiKey)
+	    .Executes(() =>
+	    {
+            DotNetNuGetPush(_ => _
+	                            .SetSource())
+	    })
 }
