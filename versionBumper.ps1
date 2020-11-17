@@ -106,9 +106,8 @@ Function Add-GitVersionInfo {
 
 	# E.  If doing a mid stream update (Non Master), then commit version and exit
 	if (! $Master) {
-	
 		# E.1  Start the NUKE build process
-		nuke Compile
+###		nuke Compile
 		if (!$?) {
 			Write-Host ""
 			Write-Host "Errors during the Nuke Building process for Non-Master branch occurrred.  Cannot continue.  Check for errors in Nuke process in above messages and correct."
@@ -118,7 +117,7 @@ Function Add-GitVersionInfo {
 		
 		# C.  Update the Versions folder with latest.
 		$versions = ProcessVersionsFile -update:$true;
-		Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)" -foregroundcolor "Cyan"
+		Write-Host "Latest Versions:                $($versions.LatestVersion)  -->  $($versions.LatestSemVer)" -foregroundcolor "Cyan"
 		Write-Host
 		Write-Host
 
@@ -181,8 +180,8 @@ Function Add-GitVersionInfo {
 	
 		# Closing
 
-		Write-Host "Latest Version:  $latestVersion"
-		Write-Host "Latest SemVer:   $latestSemVer"
+		Write-Host "Latest Version:  $($versions.LatestVersion) "
+		Write-Host "Latest SemVer:   $($versions.latestSemVer)"
 		Write-Host "Git Tagged:      $tagDesc"
 	
 }

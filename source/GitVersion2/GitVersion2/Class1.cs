@@ -14,6 +14,10 @@ namespace GitVersion2
 			x++;
 			x++;
 			x++;
+			x++;
+			x++;
+			x++;
+			x++;
 
 			int y = 0;
 			y++;
@@ -38,6 +42,9 @@ namespace GitVersion2
 			a += x;
 			a += z;
 			a += z;
+			a = a * a;
+			a += z;
+			a += 2;
 		}
 	}
 }
