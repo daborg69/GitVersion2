@@ -71,13 +71,25 @@ class Build : NukeBuild
 
 
     Target Pack => _ => _
+		.DependsOn(Compile)
 	    .Executes(() =>
 	    {
+		    
 		    DotNetPack(_ => _
-			               .SetProject(Solution.GetProject("Printer"))
-			               .SetOutputDirectory(OutputDirectory)
-			               .SetVersion(GitVersion.NuGetVersionV2));
-			    
-	    });
+		                    //.SetNoRestore(true)
+		                    .SetProject(Solution.GetProject("Core"))
+		                    .SetOutputDirectory(OutputDirectory)
+		                    .SetAssemblyVersion(GitVersion.AssemblySemVer)
+		                    .SetFileVersion(GitVersion.AssemblySemFileVer)
+		                    .SetInformationalVersion(GitVersion.InformationalVersion)
+                            .SetVersion(GitVersion.NuGetVersionV2));
+            DotNetPack(_ => _
+		                    //.SetNoRestore(true)
+                            .SetProject(Solution.GetProject("Printer"))
+		                    .SetOutputDirectory(OutputDirectory)
+		                    .SetFileVersion(GitVersion.AssemblySemFileVer)
+                            .SetVersion(GitVersion.NuGetVersionV2));
+
+        });
 
 }
