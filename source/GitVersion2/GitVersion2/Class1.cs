@@ -43,6 +43,7 @@ namespace GitVersion2
 			a += z;
 			a += z;
 			a = a * a;
+			a + = z;
 		}
 	}
 }
