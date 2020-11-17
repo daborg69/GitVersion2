@@ -2,7 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>1.0.0.2</AssemblyVersion>
+    <AssemblyVersion>1.0.0.8</AssemblyVersion>
+    <AssemblyName>Daborg69.Printer</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectDownload Include="GitVersion.Tool" Version="[5.5.1]" />
+  </ItemGroup>
 </Project>
