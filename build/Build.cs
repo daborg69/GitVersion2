@@ -76,9 +76,12 @@ class Build : NukeBuild
 
     Target Pack => _ => _
 		.DependsOn(Compile)
+
 		
 	    .Executes(() =>
 	    {
+		    OutputDirectory.GlobFiles("*.nupkg", "*symbols.nupkg").ForEach(DeleteFile);
+         
 		    DotNetPack(_ => _
 		                    .SetProject(Solution.GetProject("Core"))
 		                    .SetOutputDirectory(OutputDirectory)
