@@ -117,7 +117,7 @@ Function Add-GitVersionInfo {
 		
 		# C.  Update the Versions folder with latest.
 		$versions = ProcessVersionsFile -update:$true;
-		Write-Host "Last Versions:  $($versions.LatestVersion)  ---0----- $($versions.LatestSemVer)" -foregroundcolor "Cyan"
+		Write-Host "Latest Versions:                $($versions.LatestVersion)  -->  $($versions.LatestSemVer)" -foregroundcolor "Cyan"
 		Write-Host
 		Write-Host
 
@@ -180,8 +180,8 @@ Function Add-GitVersionInfo {
 	
 		# Closing
 
-		Write-Host "Latest Version:  $latestVersion"
-		Write-Host "Latest SemVer:   $latestSemVer"
+		Write-Host "Latest Version:  $($versions.LatestVersion) "
+		Write-Host "Latest SemVer:   $($versions.latestSemVer)"
 		Write-Host "Git Tagged:      $tagDesc"
 	
 }
