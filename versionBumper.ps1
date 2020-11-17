@@ -6,7 +6,7 @@ Function Add-GitVersionInfo {
 		If the -Master flag is set then a much larger set of functionality is invoked:
 		 - A Git Tag commit occurs, which stamps the current version into a tag with a custom tag descriptor
 		 - The branch and the tags are all pushed to the origin server.
-	#>
+	#> 
 	[cmdletbinding()] 
 	param (
 		[switch[]]$Master
