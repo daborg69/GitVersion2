@@ -152,17 +152,9 @@ Function Add-GitVersionInfo {
 			git checkout master
 			git merge $curBranch --no-ff  --no-edit -m $commitMsg
 
-		# F.2.  Nuke Build the apps
-			nuke Publish
-			if (!$?) {
-				Write-Host ""
-				Write-Host "ERROR:  Nuke Master Build process failed.  Check Nuke Process messages for details."
-				Return 600
-			}
+			$versions = ProcessVersionsFile -update:$true;
 
-		$versions = ProcessVersionsFile -update:$true;
-
-		# F.3.  Everything looks good.  commit
+		# F.2.  Everything looks good.  commit
 			$tagName = "Ver$($versions.LatestVersion)"
 			$tagDesc = "Deployed Version:  $curBranch  |  $($versions.LatestVersion)"
 			git add .
@@ -175,6 +167,17 @@ Function Add-GitVersionInfo {
 			# Finally, cleanup the feature branch 
 			git branch -D $curBranch
 			git push origin --delete $curBranch
+
+
+
+		# F.3.  Nuke Build the apps
+			nuke Publish
+			if (!$?) {
+				Write-Host ""
+				Write-Host "ERROR:  Nuke Master Build process failed.  Check Nuke Process messages for details."
+				Return 600
+			}
+
 	}
 	
 	
