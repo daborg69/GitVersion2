@@ -106,9 +106,8 @@ Function Add-GitVersionInfo {
 
 	# E.  If doing a mid stream update (Non Master), then commit version and exit
 	if (! $Master) {
-	
 		# E.1  Start the NUKE build process
-		nuke Compile
+###		nuke Compile
 		if (!$?) {
 			Write-Host ""
 			Write-Host "Errors during the Nuke Building process for Non-Master branch occurrred.  Cannot continue.  Check for errors in Nuke process in above messages and correct."
