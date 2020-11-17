@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyVersion>1.0.0.8</AssemblyVersion>
+    <AssemblyName>Daborg69.Printer</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
