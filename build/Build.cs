@@ -32,7 +32,7 @@ class Build : NukeBuild
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
-    [GitVersion] readonly GitVersion GitVersion;
+    [GitVersion(Framework = "netcoreapp3.1")] readonly GitVersion GitVersion;
 
     AbsolutePath SourceDirectory => RootDirectory / "source";
     AbsolutePath TestsDirectory => RootDirectory / "tests";
@@ -64,7 +64,20 @@ class Build : NukeBuild
                 .SetAssemblyVersion(GitVersion.AssemblySemVer)
                 .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetInformationalVersion(GitVersion.InformationalVersion)
+                .SetVerbosity(DotNetVerbosity.Minimal)
                 .EnableNoRestore());
+            
         });
+
+
+    Target Pack => _ => _
+	    .Executes(() =>
+	    {
+		    DotNetPack(_ => _
+			               .SetProject(Solution.GetProject("Printer"))
+			               .SetOutputDirectory(OutputDirectory)
+			               .SetVersion(GitVersion.NuGetVersionV2));
+			    
+	    });
 
 }

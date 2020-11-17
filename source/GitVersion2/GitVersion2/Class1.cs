@@ -40,12 +40,15 @@ namespace GitVersion2
 			a += 50;
 			a += x;
 			a = a * x;
-			a += x;
+			a += x; a++;
 			a += z;
 			a += z;
 			a = a * a;
 			a += z;
 			a += 2;
+			a++;
+			a++;
+			a++;
 		}
 	}
 }
